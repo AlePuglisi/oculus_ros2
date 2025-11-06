@@ -18,6 +18,8 @@ find_package(oculus_driver REQUIRED)
 find_package(oculus_interfaces REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package( OpenCV REQUIRED )
+find_package(tf2_ros REQUIRED)
+find_package(tf2_ros REQUIRED)
 
 add_executable(oculus_sonar_node
     src/oculus_sonar_node.cpp
