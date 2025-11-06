@@ -137,7 +137,25 @@ OculusSonarNode::OculusSonarNode() : Node("oculus_sonar")
                   << "Is it properly connected ?" << std::endl;
     }
     this->sonar_driver_->add_status_callback(std::bind(&OculusSonarNode::publish_status, this, std::placeholders::_1));
-    this->sonar_driver_->add_ping_callback(std::bind(&OculusSonarNode::publish_ping, this, std::placeholders::_1, std::placeholders::_2));
+    //this->sonar_driver_->add_ping_callback(std::bind(&OculusSonarNode::publish_ping, this, std::placeholders::_1, std::placeholders::_2));
+    // GPT code suggestion with lambda function ... TO FIX !
+    this->sonar_driver_->add_ping_callback(
+        [this](const oculus::PingMessage::ConstPtr msg)
+        {
+            // Extract metadata (correct way)
+            const OculusSimplePingResult& metadata =
+                *reinterpret_cast<const OculusSimplePingResult*>(msg->data().data());
+
+            // Extract ping bytes (correct way)
+            const uint8_t* raw = msg->ping_data();
+            size_t size = msg->ping_data_size();
+
+            std::vector<uint8_t> data(raw, raw + size);
+
+            // Call your existing method unchanged
+            this->publish_ping(metadata, data);
+        }
+    );    
     // callback on dummy messages to reactivate the pings as needed
     this->sonar_driver_->add_dummy_callback(std::bind(&OculusSonarNode::handle_dummy, this));
 }
@@ -178,7 +196,7 @@ void OculusSonarNode::publish_ping(const OculusSimplePingResult& pingMetadata,
     
     oculus::copy_to_ros(msg.ping, pingMetadata);
     msg.ping.data.resize(pingData.size());
-    for(int i = 0; i < msg.ping.data.size(); i++)
+    for(unsigned int i = 0; i < msg.ping.data.size(); i++)
         msg.ping.data[i] = pingData[i];
 
     msg.header.stamp    = to_ros_stamp(this->sonar_driver_->last_header_stamp());
