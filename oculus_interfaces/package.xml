@@ -2,8 +2,10 @@
 <package format="3">
     <name>oculus_interfaces</name>
     <version>0.0.1</version>
-    <description>TODO: Package description</description>
-    <maintainer email="auguste@forssea-robotics.fr">Auguste BOURGOIS</maintainer>
+
+    <description>ROS2 messages for BluePrint subsea Oculus sonar</description>
+    <maintainer email="puglisialessandro27@gmail.com">Alessandro Puglisi</maintainer>
+
     <license>BSD3</license>
 
     <buildtool_depend>ament_cmake</buildtool_depend>
