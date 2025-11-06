@@ -34,6 +34,16 @@ def generate_launch_description():
         arguments=['-port', LaunchConfiguration('port')],
         output='screen'
       )
+    
+    sonar_frame_static_tf_node = Node(
+            package="tf2_ros",
+            executable="static_transform_publisher",
+            output="screen" ,
+            arguments=["0", "0", "0", "0", "0", "0", "map", "oculus_sonar"]
+    )
+
     ld.add_action(oculus_sonar_node)
+    ld.add_action(sonar_frame_static_tf_node)
+
 
     return ld

@@ -172,6 +172,7 @@ void OculusSonarNode::publish_status(const OculusStatusMsg& status)
     oculus::copy_to_ros(msg, status);
 
     this->status_publisher_->publish(msg);
+    RCLCPP_INFO(this->get_logger(), "Publishing new Status Msg.");
 }
 
 inline rclcpp::Time to_ros_stamp(const SonarDriver::TimePoint& stamp)
@@ -202,6 +203,8 @@ void OculusSonarNode::publish_ping(const OculusSimplePingResult& pingMetadata,
     msg.header.stamp    = to_ros_stamp(this->sonar_driver_->last_header_stamp());
     msg.header.frame_id = "oculus_sonar";
     this->ping_publisher_->publish(msg);
+
+    RCLCPP_INFO(this->get_logger(), "Publishing new Ping Msg.");
 }
 
 void OculusSonarNode::handle_dummy()

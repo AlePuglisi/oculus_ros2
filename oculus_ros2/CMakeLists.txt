@@ -8,6 +8,7 @@ find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(rcl_interfaces REQUIRED)
+find_package(tf2_ros REQUIRED)
 
 find_package(oculus_driver QUIET)
 # if(NOT TARGET oculus_driver)
@@ -40,6 +41,7 @@ ament_target_dependencies(oculus_sonar_node PUBLIC
   rclcpp
   oculus_interfaces
   rcl_interfaces
+  tf2_ros
 )
 
 # INSTALL
