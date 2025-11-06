@@ -3,8 +3,8 @@ oculus_sonar:
     frame_id: "sonar" # Frame of reference for the ping messages.
 
     frequency_mode: 1 # Sonar beam frequency mode.
-    # 1: Low frequency (1.2MHz, wide aperture).
-    # 2: High frequency (2.1MHz, narrow aperture).
+    # 1: Low frequency  (1.2MHz, wide aperture).
+    # 2: High frequency (3.0MHz, narrow aperture).
 
     ping_rate: 0 # Frequency of ping fires.
     # 0: 10Hz max ping rate.

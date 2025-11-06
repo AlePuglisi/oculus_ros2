@@ -17,7 +17,7 @@ OculusSonarNode::OculusSonarNode() : Node("oculus_sonar")
         range.set__from_value(1).set__to_value(2).set__step(1);
         param_desc.name = "frequency_mode";
         param_desc.type = rclcpp::ParameterType::PARAMETER_INTEGER;
-        param_desc.description = "Sonar beam frequency mode.\n\t1: Low frequency (1.2MHz, wide aperture).\n\t2: High frequency (2.1Mhz, narrow aperture).";
+        param_desc.description = "Sonar beam frequency mode.\n\t1: Low frequency (1.2MHz, wide aperture).\n\t2: High frequency (3Mhz, narrow aperture).";
         param_desc.integer_range = {range};
         this->declare_parameter<int>("frequency_mode", 1, param_desc);
     }
@@ -71,9 +71,9 @@ OculusSonarNode::OculusSonarNode() : Node("oculus_sonar")
         range.set__from_value(0.3).set__to_value(40.0).set__step(0.1);
         param_desc.name = "nbeams";
         param_desc.type = rclcpp::ParameterType::PARAMETER_DOUBLE;
-        param_desc.description = "Sonar range (in meters), min=0.3, max=40.0.";
+        param_desc.description = "Sonar range (in meters), min=0.3, max=30.0.";
         param_desc.floating_point_range = {range};
-        this->declare_parameter<double>("range", 3.0, param_desc);
+        this->declare_parameter<double>("range", 5.0, param_desc);
     }
     if (!this->has_parameter("gamma_correction")) {
         rcl_interfaces::msg::ParameterDescriptor param_desc;
