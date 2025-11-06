@@ -111,7 +111,7 @@ with open(args.output,'wb') as outputFile:
             {'name': 'spare1', 'type': 'I','val' : 125},
             {'name': 'time_unix', 'type': 'd','val' : bagMessage.timestamp.to_time()},
             {'name': 'compression', 'type': 'H','val' : 0},
-            {'name': 'spare2', 'type': 'H','val' : 126},
+            {'name': 'partNumber', 'type': 'H','val' : 126},
             {'name': 'rawSize', 'type': 'I','val' : 0},
             {'name': 'payloadSize', 'type': 'I','val' : 0},
         )

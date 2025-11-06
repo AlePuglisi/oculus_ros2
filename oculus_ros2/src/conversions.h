@@ -18,7 +18,7 @@ inline void copy_to_ros(oculus_interfaces::msg::OculusHeader &msg, const OculusM
     msg.msg_id        = header.msgId;
     msg.msg_version   = header.msgVersion;
     msg.payload_size  = header.payloadSize;
-    msg.spare2       = header.spare2;
+    msg.part_number       = header.partNumber;
 }
 
 inline void copy_to_ros(oculus_interfaces::msg::OculusVersionInfo &msg, const OculusVersionInfo& version)
@@ -40,7 +40,7 @@ inline void copy_to_ros(oculus_interfaces::msg::OculusStatus &msg, const OculusS
     msg.part_number      = status.partNumber;
     msg.status          = status.status;
 
-    copy_to_ros(msg.versin_info,status.versinInfo);
+    copy_to_ros(msg.versin_info,status.versionInfo);
 
     msg.ip_addr          = status.ipAddr;
     msg.ip_mask          = status.ipMask;
@@ -87,7 +87,7 @@ inline void copy_to_ros(oculus_interfaces::msg::OculusPing &msg, const OculusSim
     msg.frequency         = ping.frequency;
     msg.temperature       = ping.temperature;
     msg.pressure          = ping.pressure;
-    msg.speeed_of_sound_used = ping.speeedOfSoundUsed;
+    msg.speed_of_sound_used = ping.speedOfSoundUsed;
     msg.ping_start_time     = ping.pingStartTime;
     msg.data_size          = ping.dataSize;
     msg.range_resolution   = ping.rangeResolution;

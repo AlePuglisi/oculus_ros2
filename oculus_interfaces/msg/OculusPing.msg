@@ -6,7 +6,7 @@ uint32  status
 float64 frequency
 float64 temperature
 float64 pressure
-float64 speeed_of_sound_used
+float64 speed_of_sound_used
 uint32  ping_start_time
 uint8   data_size
 float64 range_resolution
