@@ -188,12 +188,13 @@ void OculusSonarNode::publish_ping(const OculusSimplePingResult& pingMetadata,
 {
     static oculus_interfaces::msg::OculusStampedPing msg;
      
-    
-    if(this->count_subscribers(this->ping_topic_) == 0) {
-        cout << "Going to standby mode" << endl;
-        this->sonar_driver_->standby();
-        //return;
-    }
+    // StandBy Useless
+        
+    // if(this->count_subscribers(this->ping_topic_) == 0) {
+    //     cout << "Going to standby mode" << endl;
+    //     this->sonar_driver_->standby();
+    //     //return;
+    // }
     
     oculus::copy_to_ros(msg.ping, pingMetadata);
     msg.ping.data.resize(pingData.size());
