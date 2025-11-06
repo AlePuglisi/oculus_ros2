@@ -10,14 +10,14 @@ find_package(std_msgs REQUIRED)
 find_package(rcl_interfaces REQUIRED)
 
 find_package(oculus_driver QUIET)
-if(NOT TARGET oculus_driver)
-    include(FetchContent)
-    FetchContent_Declare(oculus_driver
-        GIT_REPOSITORY   https://github.com/ENSTABretagneRobotics/oculus_driver.git
-        GIT_TAG          v1.0
-    )
-    FetchContent_MakeAvailable(oculus_driver)
-endif()
+# if(NOT TARGET oculus_driver)
+#     include(FetchContent)
+#     FetchContent_Declare(oculus_driver
+#         GIT_REPOSITORY  https://github.com/AlePuglisi/sonar_driver_oculus.git
+#         GIT_TAG          v1.0
+#     )
+#     FetchContent_MakeAvailable(oculus_driver)
+# endif()
 
 add_executable(oculus_sonar_node
     src/oculus_sonar_node.cpp
@@ -30,6 +30,11 @@ target_compile_features(oculus_sonar_node PRIVATE cxx_std_17)
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_compile_options(oculus_sonar_node PRIVATE -Wall -Wextra -Wpedantic)
 endif()
+
+set_target_properties(oculus_sonar_node PROPERTIES
+    BUILD_RPATH "/usr/local/lib"
+    INSTALL_RPATH "/usr/local/lib"
+)
 
 ament_target_dependencies(oculus_sonar_node PUBLIC
   rclcpp
