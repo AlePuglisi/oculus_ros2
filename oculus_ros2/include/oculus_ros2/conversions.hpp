@@ -83,7 +83,7 @@ inline void toMsg(oculus_interfaces::msg::OculusStatus& msg, const OculusStatusM
   msg.part_number = status.partNumber;
   msg.status = status.status;
 
-  toMsg(msg.version_info, status.versinInfo);
+  toMsg(msg.version_info, status.versionInfo);
 
   msg.ip_addr = status.ipAddr;
   msg.ip_mask = status.ipMask;
@@ -128,7 +128,7 @@ inline void toMsg(oculus_interfaces::msg::OculusPing& msg, const OculusSimplePin
   msg.frequency = ping.frequency;
   msg.temperature = ping.temperature;
   msg.pressure = ping.pressure;
-  msg.speeed_of_sound_used = ping.speedOfSoundUsed;
+  msg.speed_of_sound_used = ping.speedOfSoundUsed;
   msg.ping_start_time = ping.pingStartTime;
   msg.data_size = ping.dataSize;
   msg.range_resolution = ping.rangeResolution;

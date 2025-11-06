@@ -105,16 +105,23 @@ void SonarViewer::publishFan(const int& width,
   for (int i = 0; i < height; ++i)
     std::copy(ping_data.begin() + offset + i * step, ping_data.begin() + offset + (i + 1) * step, sonar_mat_data.ptr<uint8_t>(i));
 
-  {  // Correct range gainsfloat gain_min =
+{  // Correct range gains
     float raw_gain_min = std::numeric_limits<float>::max();
     float raw_gain_max = std::numeric_limits<float>::min();
     for (int i = 0; i < height; i++) {
-      raw_gain_min = std::min(raw_gain_min, static_cast<float>(sonar_mat_data.at<uint32_t>(i, 0)));
-      raw_gain_max = std::max(raw_gain_max, static_cast<float>(sonar_mat_data.at<uint32_t>(i, 0)));
+      // Read 4 bytes as uint32_t
+      uint32_t gain_value;
+      std::memcpy(&gain_value, sonar_mat_data.ptr<uint8_t>(i), sizeof(uint32_t));
+      
+      raw_gain_min = std::min(raw_gain_min, static_cast<float>(gain_value));
+      raw_gain_max = std::max(raw_gain_max, static_cast<float>(gain_value));
     }
     const float gain_nomalization = std::sqrt(raw_gain_max) / std::numeric_limits<uint8_t>::max();
     for (int i = 0; i < height; i++) {
-      const float gain_i = gain_nomalization / std::sqrt(sonar_mat_data.at<uint32_t>(i, 0));
+      uint32_t gain_value;
+      std::memcpy(&gain_value, sonar_mat_data.ptr<uint8_t>(i), sizeof(uint32_t));
+      const float gain_i = gain_nomalization / std::sqrt(gain_value);
+      
       for (int j = SIZE_OF_GAIN_; j < step; j++) {
         const float new_pixel_val = sonar_mat_data.at<uint8_t>(i, j) * gain_i;
         sonar_mat_data.at<uint8_t>(i, j) = std::clamp(new_pixel_val, 0.0f, 255.0f);

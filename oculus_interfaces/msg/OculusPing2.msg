@@ -9,7 +9,7 @@ float64   pressure          # The external pressure (bar)
 float64   heading           # The heading (degrees) 
 float64   pitch             # The pitch (degrees) 
 float64   roll              # The roll (degrees) 
-float64   speeed_of_sound_used # The actual used speed of sound (m/s) 
+float64   speed_of_sound_used # The actual used speed of sound (m/s) 
 float64   ping_start_time     # In seconds from sonar powerup (to microsecond resolution) 
 uint8  data_size          # The size of the individual data entries  # was DataSizeType
 float64   range_resolution   # The range in metres corresponding to a single range line 

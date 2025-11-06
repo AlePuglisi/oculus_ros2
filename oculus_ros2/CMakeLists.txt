@@ -17,7 +17,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(oculus_driver REQUIRED)
 find_package(oculus_interfaces REQUIRED)
 find_package(cv_bridge REQUIRED)
-find_package(OpenCV 4.5.4 REQUIRED)
+find_package( OpenCV REQUIRED )
 
 add_executable(oculus_sonar_node
     src/oculus_sonar_node.cpp
@@ -30,6 +30,7 @@ target_include_directories(oculus_sonar_node PUBLIC
 )
 target_link_libraries(oculus_sonar_node PRIVATE
     oculus_driver
+    ${OpenCV_LIBS} 
 )
 ament_target_dependencies(oculus_sonar_node PUBLIC
     rclcpp
@@ -51,6 +52,7 @@ target_include_directories(oculus_simple_sonar_node PUBLIC
 )
 target_link_libraries(oculus_simple_sonar_node PRIVATE
     oculus_driver
+    ${OpenCV_LIBS} 
 )
 ament_target_dependencies(oculus_simple_sonar_node PUBLIC
     rclcpp
@@ -71,6 +73,7 @@ target_include_directories(oculus_viewer_node PUBLIC
 )
 target_link_libraries(oculus_viewer_node PRIVATE
     oculus_driver
+    ${OpenCV_LIBS} 
 )
 ament_target_dependencies(oculus_viewer_node PUBLIC
     rclcpp
