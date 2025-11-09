@@ -82,7 +82,8 @@ OculusSonarNode::OculusSonarNode()
   this->currentConfig_.range = 10.0;       // The range demand (%) 
   this->currentConfig_.gainPercent = 100.0;        // The percentage gain 
   this->currentConfig_.speedOfSound = 1499.0;       // The speed of sound - set to zero to use internal calculations 
-  this->currentConfig_.salinity = 0;           // THe salinity to be used with internal speed of sound calculations (ppt) 
+  this->currentConfig_.salinity = 0;           // THe salinity to be used with internal speed of sound calculations (ppt)
+  // Commented because PingConfig uses SimpleFireMessage that doesn't store this fields (Not version2) 
   // this->currentConfig_.extFlags = 0;
   // this->currentConfig_.reserved0[0] = 0;
   // this->currentConfig_.reserved0[1] = 0;
@@ -201,9 +202,9 @@ void OculusSonarNode::checkMinimalFlags(const uint8_t& flags) const {
 }
 
 void OculusSonarNode::publishStatus(const OculusStatusMsg& status) {
-  if (status.partNumber != OculusPartNumberType::partNumberM1200d) {
+  if (status.partNumber != OculusPartNumberType::partNumberM3000d) {
     RCLCPP_ERROR_STREAM(get_logger(),
-        "The sonar version seems to be different than M1200d."
+        "The sonar version seems to be different than M3000d."
         " This driver is not suppose to work with your sonar.");
   }
 
@@ -415,7 +416,7 @@ void OculusSonarNode::sendParamToSonar(rclcpp::Parameter param, rcl_interfaces::
   SonarDriver::PingConfig newConfig = currentConfig_;  // To avoid to create a new SonarDriver::PingConfig from ros parameters
 	RCLCPP_INFO_STREAM(this->get_logger(), "PARAMETER: " << param.get_name() << "\n");
   if (param.get_name() == params::FREQUENCY_MODE.name) {
-    RCLCPP_INFO_STREAM(this->get_logger(), "Updating frequency_mode to " << param.as_int() << " (1: 1.2MHz, 2: 2.1MHz).");
+    RCLCPP_INFO_STREAM(this->get_logger(), "Updating frequency_mode to " << param.as_int() << " (1: 1.2MHz, 2: 3.0MHz).");
     newConfig.masterMode = param.as_int();
   } else if (param.get_name() == params::PING_RATE.name) {
     RCLCPP_INFO_STREAM(this->get_logger(), "Updating ping_rate to " << param.as_int() << " (" + params::PING_RATE.desc + ").");

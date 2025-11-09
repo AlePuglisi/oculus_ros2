@@ -129,8 +129,8 @@ struct IntParam {
 
 const IntParam FREQUENCY_MODE = {"frequency_mode", 1, 2, 2,
     "Sonar beam frequency mode.\n"
-    "\t1: Low frequency (1.2MHz, wide aperture).\n"
-    "\t2: High frequency (2.1Mhz, narrow aperture)."};
+    "\t1: Low frequency  (1.2MHz, wide aperture).\n"
+    "\t2: High frequency (3.0Mhz, narrow aperture)."};
 
 const IntParam PING_RATE = {"ping_rate", 0, 5, 2,
     "Frequency of ping fires.\n\t" + std::to_string(pingRateNormal) + ": 10Hz max ping rate.\n\t" + std::to_string(pingRateHigh) +
