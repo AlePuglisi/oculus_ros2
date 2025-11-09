@@ -43,6 +43,8 @@ OculusSonarNode::OculusSonarNode()
     frame_id_(this->declare_parameter<std::string>("frame_id", "sonar")),
     temperature_warn_limit_(this->declare_parameter<double>("temperature_warn", params::TEMPERATURE_WARN_DEFAULT_VALUE)),
     temperature_stop_limit_(this->declare_parameter<double>("temperature_stop", params::TEMPERATURE_STOP_DEFAULT_VALUE)) {
+  
+  RCLCPP_INFO(this->get_logger(), "Initializing the node ...");
   this->status_publisher_ = this->create_publisher<oculus_interfaces::msg::OculusStatus>("status", 1);
   this->ping_publisher_ = this->create_publisher<oculus_interfaces::msg::Ping>("ping", 1);
   this->oculus_ping_publisher_ = this->create_publisher<oculus_interfaces::msg::OculusPing2>("oculus_ping", 1);
@@ -50,13 +52,15 @@ OculusSonarNode::OculusSonarNode()
   this->pressure_publisher_ = this->create_publisher<sensor_msgs::msg::FluidPressure>("pressure", 1);
 
   this->sonar_driver_ = std::make_shared<SonarDriver>(this->io_service_.io_service());
+  
+  RCLCPP_INFO(this->get_logger(), " Connecting with the Oculus Sonar...");
   this->io_service_.start();
   if (!this->sonar_driver_->wait_next_message()) {  // Non-blocking function making connection with the sonar.
     std::cerr << "Timeout reached while waiting for a connection to the Oculus sonar. "
               << "Is it properly connected ?" << std::endl;
   }
 
-  while (!this->sonar_driver_->connected())  // Blocking while waiting the connected with the sonar.
+  while (rclcpp::ok() && !this->sonar_driver_->connected())  // Blocking while waiting the connected with the sonar.
   {
     // std::cerr << "Timeout reached while waiting for a connection to the Oculus sonar. "
     //           << "Is it properly connected ?" << std::endl;
@@ -64,7 +68,13 @@ OculusSonarNode::OculusSonarNode()
     std::this_thread::sleep_for(std::chrono::milliseconds(sleepWhileConnecting));
   }
 
-    // send config to Oculus sonar and wait for feedback
+  if (!this->sonar_driver_->connected()) {
+    std::cerr << "Connection Failed." << std::endl;
+    return;  // Exit constructor early
+  }
+
+  RCLCPP_INFO(this->get_logger(), " Connection Established ! ...");
+  // send config to Oculus sonar and wait for feedback
 
   this->currentConfig_.head.oculusId = 0x4f53;
   this->currentConfig_.head.srcDeviceId = 0;      // The device id of the source
@@ -73,7 +83,6 @@ OculusSonarNode::OculusSonarNode()
   this->currentConfig_.head.msgVersion = 2;
   this->currentConfig_.head.payloadSize = sizeof(PingConfig) - sizeof(OculusMessageHeader);
   this->currentConfig_.head.partNumber = 0;
-//
   this->currentConfig_.masterMode = 1;
   this->currentConfig_.pingRate = pingRateHighest;           // was PingRateType
   this->currentConfig_.networkSpeed = 0xff;       // The max network speed in Mbs , set to 0x00 or 0xff to use link speed 
@@ -83,7 +92,10 @@ OculusSonarNode::OculusSonarNode()
   this->currentConfig_.gainPercent = 100.0;        // The percentage gain 
   this->currentConfig_.speedOfSound = 1499.0;       // The speed of sound - set to zero to use internal calculations 
   this->currentConfig_.salinity = 0;           // THe salinity to be used with internal speed of sound calculations (ppt)
+
   // Commented because PingConfig uses SimpleFireMessage that doesn't store this fields (Not version2) 
+  // [QUESTION] Ask about this part of the Code ... How it is handled this error
+
   // this->currentConfig_.extFlags = 0;
   // this->currentConfig_.reserved0[0] = 0;
   // this->currentConfig_.reserved0[1] = 0;
@@ -92,6 +104,11 @@ OculusSonarNode::OculusSonarNode()
   // this->currentConfig_.reserved1[2] = 0;
   // this->currentConfig_.reserved1[3] = 0;
   // this->currentConfig_.reserved1[4] = 0;
+
+  RCLCPP_INFO(this->get_logger(), " Setting up parameters ...");
+  
+  this->param_cb_ = this->add_on_set_parameters_callback(std::bind(&OculusSonarNode::setConfigCallback, this,
+      std::placeholders::_1));  // TODO(hugoyvrn, to move before parameters initialisation ?)
 
   for (const params::BoolParam& param : params::BOOL) {
     if (!this->has_parameter(param.name)) {
@@ -133,15 +150,15 @@ OculusSonarNode::OculusSonarNode()
   for (const std::string& param_name : dynamic_parameters_names_) {
     setConfigCallback(this->get_parameters(std::vector{param_name}));
   }
-  this->param_cb_ = this->add_on_set_parameters_callback(std::bind(&OculusSonarNode::setConfigCallback, this,
-      std::placeholders::_1));  // TODO(hugoyvrn, to move before parameters initialisation ?)
 
   // this->??(&OculusSonarNode::enableRunMode)  // TODO(hugoyvrn)
-
+  RCLCPP_INFO(this->get_logger(), " Setting up driver callbacks ...");
   this->sonar_driver_->add_status_callback(std::bind(&OculusSonarNode::publishStatus, this, std::placeholders::_1));
   this->sonar_driver_->add_ping_callback(std::bind(&OculusSonarNode::publishPing, this, std::placeholders::_1));
   // callback on dummy messages to reactivate the pings as needed
   this->sonar_driver_->add_dummy_callback(std::bind(&OculusSonarNode::handleDummy, this));
+  
+  RCLCPP_INFO(this->get_logger(), " Node initialized");
 }
 
 OculusSonarNode::~OculusSonarNode() {

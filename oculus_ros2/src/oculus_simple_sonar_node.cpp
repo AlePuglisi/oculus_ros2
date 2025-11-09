@@ -202,9 +202,9 @@ void OculusSonarNode::checkMinimalFlags(const uint8_t& flags) const {
 }
 
 void OculusSonarNode::publishStatus(const OculusStatusMsg& status) {
-  if (status.partNumber != OculusPartNumberType::partNumberM1200d) {
+  if (status.partNumber != OculusPartNumberType::partNumberM3000d) {
     RCLCPP_ERROR_STREAM(get_logger(),
-        "The sonar version seems to be different than M1200d."
+        "The sonar version seems to be different than M3000d."
         " This driver is not suppose to work with your sonar.");
   }
 
