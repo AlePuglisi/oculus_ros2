@@ -9,4 +9,6 @@ float64 gain_percent
 float64 speed_of_sound
 float64 salinity
 uint32 ext_flags
-uint32[8] reserved
+uint32[2] reserved0
+uint32 beacon_locator_frequency
+uint32[5] reserved1

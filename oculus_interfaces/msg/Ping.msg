@@ -17,7 +17,7 @@ float64 range_resolution     # Distance between 2 rows in the ping image data.
 float64 temperature         # External temperature (C)
 float64 pressure            # External pressure    (bar)
 
-uint8   master_mode          # 1 is "low frequency" (1.2MHz), 2 is high frequency (2.1 MHz)
+uint8   master_mode          # 1 is "low frequency" (1.2MHz), 2 is high frequency (3.0 MHz)
 bool    has_gains            # Each row in the image data comes with a gain (to
                             # be compensated for consistent acoustic readings.
                             # See documentation for more details)

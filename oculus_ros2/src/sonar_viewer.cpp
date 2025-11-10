@@ -62,7 +62,8 @@ void SonarViewer::publishFan(const int& width,
     const int& offset,
     const std::vector<uint8_t>& ping_data,
     const int& master_mode,
-    const std_msgs::msg::Header& header) const {
+    const std_msgs::msg::Header& header) const 
+{
   const int step = width + SIZE_OF_GAIN_;
   const float theta_shift = 270;
   const int mat_encoding = CV_8U;
