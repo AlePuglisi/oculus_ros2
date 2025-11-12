@@ -40,7 +40,7 @@ OculusSonarNode::OculusSonarNode()
   : Node("oculus_sonar"),
     is_running_(this->declare_parameter<bool>("run", params::RUN_MODE_DEFAULT_VALUE)),
     sonar_viewer_(static_cast<rclcpp::Node*>(this)),
-    frame_id_(this->declare_parameter<std::string>("frame_id", "sonar")),
+    frame_id_(this->declare_parameter<std::string>("frame_id", "oculus_sonar")),
     temperature_warn_limit_(this->declare_parameter<double>("temperature_warn", params::TEMPERATURE_WARN_DEFAULT_VALUE)),
     temperature_stop_limit_(this->declare_parameter<double>("temperature_stop", params::TEMPERATURE_STOP_DEFAULT_VALUE)) {
   
@@ -83,14 +83,14 @@ OculusSonarNode::OculusSonarNode()
   this->currentConfig_.head.msgVersion = 2;
   this->currentConfig_.head.payloadSize = sizeof(PingConfig) - sizeof(OculusMessageHeader);
   this->currentConfig_.head.partNumber = 0;
-  this->currentConfig_.masterMode = 1;
-  this->currentConfig_.pingRate = pingRateHighest;           // was PingRateType
+  this->currentConfig_.masterMode = 2;
+  this->currentConfig_.pingRate = pingRateNormal;           // was PingRateType
   this->currentConfig_.networkSpeed = 0xff;       // The max network speed in Mbs , set to 0x00 or 0xff to use link speed 
-  this->currentConfig_.gammaCorrection = 0;    // The gamma correction - 255 is equal to a gamma correction of 1.0 
+  this->currentConfig_.gammaCorrection = 127;    // The gamma correction - 255 is equal to a gamma correction of 1.0 
   this->currentConfig_.flags = (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3);
-  this->currentConfig_.range = 10.0;       // The range demand (%) 
-  this->currentConfig_.gainPercent = 100.0;        // The percentage gain 
-  this->currentConfig_.speedOfSound = 1499.0;       // The speed of sound - set to zero to use internal calculations 
+  this->currentConfig_.range = 5.0;       // The range demand (%) 
+  this->currentConfig_.gainPercent = 50.0;        // The percentage gain 
+  this->currentConfig_.speedOfSound = 0;       // The speed of sound - set to zero to use internal calculations 
   this->currentConfig_.salinity = 0;           // THe salinity to be used with internal speed of sound calculations (ppt)
 
   // Commented because PingConfig uses SimpleFireMessage that doesn't store this fields (Not version2) 
@@ -106,9 +106,6 @@ OculusSonarNode::OculusSonarNode()
   // this->currentConfig_.reserved1[4] = 0;
 
   RCLCPP_INFO(this->get_logger(), " Setting up parameters ...");
-  
-  this->param_cb_ = this->add_on_set_parameters_callback(std::bind(&OculusSonarNode::setConfigCallback, this,
-      std::placeholders::_1));  // TODO(hugoyvrn, to move before parameters initialisation ?)
 
   for (const params::BoolParam& param : params::BOOL) {
     if (!this->has_parameter(param.name)) {
@@ -151,7 +148,11 @@ OculusSonarNode::OculusSonarNode()
     setConfigCallback(this->get_parameters(std::vector{param_name}));
   }
 
+  this->param_cb_ = this->add_on_set_parameters_callback(std::bind(&OculusSonarNode::setConfigCallback, this,
+      std::placeholders::_1));  // TODO(hugoyvrn, to move before parameters initialisation ?)
+
   // this->??(&OculusSonarNode::enableRunMode)  // TODO(hugoyvrn)
+
   RCLCPP_INFO(this->get_logger(), " Setting up driver callbacks ...");
   this->sonar_driver_->add_status_callback(std::bind(&OculusSonarNode::publishStatus, this, std::placeholders::_1));
   this->sonar_driver_->add_ping_callback(std::bind(&OculusSonarNode::publishPing, this, std::placeholders::_1));
@@ -159,6 +160,8 @@ OculusSonarNode::OculusSonarNode()
   this->sonar_driver_->add_dummy_callback(std::bind(&OculusSonarNode::handleDummy, this));
   
   RCLCPP_INFO(this->get_logger(), " Node initialized");
+  this->enableRunMode();
+
 }
 
 OculusSonarNode::~OculusSonarNode() {
@@ -269,6 +272,7 @@ void OculusSonarNode::updateRosConfig() {
 }
 
 int OculusSonarNode::get_subscription_count() const {
+  //return 1;
   return this->ping_publisher_->get_subscription_count() + sonar_viewer_.image_publisher_->get_subscription_count();
 }
 
@@ -277,6 +281,7 @@ void OculusSonarNode::publishPing(const oculus::PingMessage::ConstPtr& ping) {
   checkOverheating(ping->temperature());
   if (!is_running_) {
     disableRunMode();
+    RCLCPP_INFO_STREAM(this->get_logger(), "(! is_running_ ping_rate mode is seted to " << pingRateStandby << ".");
   } 
   // commented because useless.
   // else if (get_subscription_count() == 0) {
@@ -330,7 +335,7 @@ void OculusSonarNode::publishPing(const oculus::PingMessage::ConstPtr& ping) {
 
   // TODO(hugoyvrn, publish bearings)
 
-  sonar_viewer_.publishFan(ping, frame_id_);
+  //sonar_viewer_.publishFan(ping, frame_id_);
 }
 
 void OculusSonarNode::handleDummy() {

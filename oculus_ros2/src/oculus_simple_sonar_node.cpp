@@ -40,7 +40,7 @@ OculusSonarNode::OculusSonarNode()
   : Node("oculus_simple_sonar"),
     is_running_(this->declare_parameter<bool>("run", true)),
     sonar_viewer_(static_cast<rclcpp::Node*>(this)),
-    frame_id_(this->declare_parameter<std::string>("frame_id", "sonar")),
+    frame_id_(this->declare_parameter<std::string>("frame_id", "oculus_sonar")),
     temperature_warn_limit_(this->declare_parameter<double>("temperature_warn", params::TEMPERATURE_WARN_DEFAULT_VALUE)),
     temperature_stop_limit_(this->declare_parameter<double>("temperature_stop", params::TEMPERATURE_STOP_DEFAULT_VALUE)) {
   this->status_publisher_ = this->create_publisher<oculus_interfaces::msg::OculusStatus>("status", 1);
@@ -74,13 +74,13 @@ OculusSonarNode::OculusSonarNode()
   this->currentConfig_.head.payloadSize = sizeof(PingConfig) - sizeof(OculusMessageHeader);
   this->currentConfig_.head.partNumber = 0;
 //
-  this->currentConfig_.masterMode = 1;
+  this->currentConfig_.masterMode = 2;
   this->currentConfig_.pingRate = pingRateHighest;           // was PingRateType
   this->currentConfig_.networkSpeed = 0xff;       // The max network speed in Mbs , set to 0x00 or 0xff to use link speed 
   this->currentConfig_.gammaCorrection = 0;    // The gamma correction - 255 is equal to a gamma correction of 1.0 
   this->currentConfig_.flags = (1 << 0) | (0 << 1) | (1 << 2) | (1 << 3);
-  this->currentConfig_.range = 10.0;       // The range demand (%) 
-  this->currentConfig_.gainPercent = 100.0;        // The percentage gain 
+  this->currentConfig_.range = 5.0;       // The range demand (%) 
+  this->currentConfig_.gainPercent = 50.0;        // The percentage gain 
   this->currentConfig_.speedOfSound = 1499.0;       // The speed of sound - set to zero to use internal calculations 
   this->currentConfig_.salinity = 0;           // THe salinity to be used with internal speed of sound calculations (ppt) 
   // this->currentConfig_.extFlags = 0;
@@ -252,6 +252,7 @@ void OculusSonarNode::updateRosConfig() {
 }
 
 int OculusSonarNode::get_subscription_count() const {
+  return 1;
   return this->ping_publisher_->get_subscription_count() + sonar_viewer_.image_publisher_->get_subscription_count();
 }
 

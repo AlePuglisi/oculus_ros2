@@ -175,7 +175,7 @@ class Oculus_parser(RosBagCreator):
         ros_msg.header.stamp.sec = int(seconds)
         ros_msg.header.stamp.nanosec = int((seconds % 1) * 1e9)
 
-        ros_msg.header.frame_id = "sonar"
+        ros_msg.header.frame_id = "oculus_sonar"
 
         ros_msg.range = ping_msg.range_resolution()
         ros_msg.gain_percent = ping_msg.gain_percent()

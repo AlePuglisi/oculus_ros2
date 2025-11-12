@@ -57,6 +57,7 @@ void SonarViewer::publishFan(const oculus::PingMessage::ConstPtr& ping, const st
   publishFan(ping->bearing_count(), ping->range_count(), ping->ping_data_offset(), ping->data(), ping->master_mode(), header);
 }
 
+// FAN NOT WORKING
 void SonarViewer::publishFan(const int& width,
     const int& height,
     const int& offset,

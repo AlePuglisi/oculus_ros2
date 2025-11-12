@@ -43,6 +43,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include <oculus_ros2/sonar_viewer.hpp>
 
 sensor_msgs::msg::CompressedImage compressImageMsg(const sensor_msgs::msg::Image & image_msg)
 {
@@ -78,19 +79,21 @@ class ScientificViewer : public rclcpp::Node
 {
   public:
     ScientificViewer()
-    : Node("scientific_viewer")
+    : Node("scientific_viewer")//, sonar_viewer_(static_cast<rclcpp::Node*>(this))
     {
-      ping_subscriber_ = this->create_subscription<oculus_interfaces::msg::Ping>("sonar/ping", 1, std::bind(&ScientificViewer::ping_callback, this, std::placeholders::_1));
+      ping_subscriber_ = this->create_subscription<oculus_interfaces::msg::Ping>("ping", 1, std::bind(&ScientificViewer::ping_callback, this, std::placeholders::_1));
 
       // rtheta_publisher_ = this->create_publisher<sensor_msgs::msg::Image>("scientific/rtheta_image", 10);
       rtheta_publisher_ = this->create_publisher<sensor_msgs::msg::Image>("scientific/rtheta_image", 1);
       rtheta_compressed_publisher_ = this->create_publisher<sensor_msgs::msg::CompressedImage>("scientific/compressed_rtheta_image", 1);
 
+      
     }
 
   private:
     void ping_callback(const oculus_interfaces::msg::Ping & msg)
     {
+      //RCLCPP_INFO(get_logger(), "Ping callback");
       auto rtheta_image = sensor_msgs::msg::Image();
       rtheta_image.header = msg.header;
       rtheta_image.height = msg.n_ranges;
@@ -116,6 +119,8 @@ class ScientificViewer : public rclcpp::Node
       float raw_gain_min = std::numeric_limits<float>::max();
       float raw_gain_max = std::numeric_limits<float>::min();
       float max_intensity=0.;
+
+      // getting max/min gain (Not usefull later on)
       for (int i = 0; i < height; i++) {
         auto byte0 =  *(ping_data.begin() + offset + i * step);
         auto byte1 =  *(ping_data.begin() + offset + i * step +1);
@@ -130,7 +135,11 @@ class ScientificViewer : public rclcpp::Node
       }
 
       float r_max=20.;
-
+      // take each line 
+      // taking gains for adaptive adjustment correction
+      // decoding of bytes to compute line gains (all theta for a given range)
+      // CAG main loop 
+      // you cannot block oculus cag 
       for (int i = 0; i < height; ++i)
       {
         uint8_t byte0 =  *(ping_data.begin() + offset + i * step);
@@ -141,14 +150,19 @@ class ScientificViewer : public rclcpp::Node
                   (static_cast<uint32_t>(byte1) << 8) |
                   (static_cast<uint32_t>(byte2) << 16) |
                   (static_cast<uint32_t>(byte3) << 24);
+        // 1 instead of 3000 pure CAG
+        // parameter tuning (higher gain for higher saturation)
+        // constant gain_i to keep CAG (CAG correction)
         float gain_i = 3000./std::sqrt(static_cast<float>(gain)); //1200kHz, 2000 for buoy
         float tvg_factor = 40.0*log(1+r_max*((float) i/(float) height));
         // RCLCPP_INFO(this->get_logger(), "tvg_factor: %u %f", i, tvg_factor);
 
+        // comment it to remove diffusion compensation
         gain_i *= tvg_factor/90.;
         
         // float gain_i = 10000./std::sqrt(static_cast<float>(gain)); // 2100kHz 
         // RCLCPP_INFO(this->get_logger(), "Gain: %u %f", i, std::sqrt(gain_i));
+        // for each pixel apply the gain .. 
         for (int j = SIZE_OF_GAIN_; j < step; j++)
         {
           auto data = *(ping_data.begin() + offset + i * step + j);
@@ -160,7 +174,9 @@ class ScientificViewer : public rclcpp::Node
 
           if (i>=150)
             max_intensity = std::max(max_intensity, new_data);
-          if (new_data>255)
+          if (new_data>255) 
+          // limit because of ROS2 saturation of images
+          // (Maybe opencv limit ... check it)
             new_data=255.;
           datas.push_back(new_data);  // no CAG
           // datas.push_back(data); // CAG
@@ -168,15 +184,19 @@ class ScientificViewer : public rclcpp::Node
       }
       // RCLCPP_INFO(this->get_logger(), "Max intensity: %f", max_intensity);
       rtheta_image.data = datas;
-      // rtheta_publisher_->publish(rtheta_image);
+      rtheta_publisher_->publish(rtheta_image);
       
       auto compressed_image = compressImageMsg(rtheta_image);
       rtheta_compressed_publisher_->publish(compressed_image);
+
+      //sonar_viewer_.publishFan(msg.n_beams, msg.n_ranges, offset, datas, msg.master_mode,  msg.header);
+      //RCLCPP_INFO(get_logger(), " Image published");
     }
 
     rclcpp::Subscription<oculus_interfaces::msg::Ping>::SharedPtr ping_subscriber_;
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr rtheta_publisher_;
     rclcpp::Publisher<sensor_msgs::msg::CompressedImage>::SharedPtr rtheta_compressed_publisher_;
+    //SonarViewer sonar_viewer_;
 };
 
 int main(int argc, char * argv[])

@@ -1,6 +1,6 @@
 /**:
   ros__parameters:
-    frame_id: "sonar" # Frame of reference for the ping messages. Default value is "sonar".
+    frame_id: "oculus_sonar" # Frame of reference for the ping messages. Default value is "sonar".
 
     temperature_warn: 35. # Sonar temperature at which a warning is raised. Default value is 30.0.
     temperature_stop: 40. # Sonar temperature at which the sonar goes to standby mode. Default value is 35.0.

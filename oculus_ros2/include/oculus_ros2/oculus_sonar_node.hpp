@@ -102,7 +102,7 @@ namespace params {
 
 const double TEMPERATURE_WARN_DEFAULT_VALUE = 30.;
 const double TEMPERATURE_STOP_DEFAULT_VALUE = 35.;
-const bool RUN_MODE_DEFAULT_VALUE = false;
+const bool RUN_MODE_DEFAULT_VALUE = true;
 
 struct BoolParam {
   const std::string name;
@@ -132,7 +132,7 @@ const IntParam FREQUENCY_MODE = {"frequency_mode", 1, 2, 2,
     "\t1: Low frequency  (1.2MHz, wide aperture).\n"
     "\t2: High frequency (3.0Mhz, narrow aperture)."};
 
-const IntParam PING_RATE = {"ping_rate", 0, 5, 2,
+const IntParam PING_RATE = {"ping_rate", 0, 5, 0,
     "Frequency of ping fires.\n\t" + std::to_string(pingRateNormal) + ": 10Hz max ping rate.\n\t" + std::to_string(pingRateHigh) +
         ": 15Hz max ping rate.\n\t" + std::to_string(pingRateHighest) + ": 40Hz max ping rate.\n\t" +
         std::to_string(pingRateLow) + ": 5Hz max ping rate.\n\t" + std::to_string(pingRateLowest) + ": 2Hz max ping rate.\n\t" +
@@ -154,7 +154,7 @@ struct DoubleParam {
   const std::string desc;
 };
 
-const DoubleParam RANGE = {"range", .3, 40., .1, 20., "Sonar range (in meters), min=0.3, max=40.0."};
+const DoubleParam RANGE = {"range", .3, 30., .1, 5., "Sonar range (in meters), min=0.3, max=40.0."};
 const DoubleParam GAIN_PERCENT = {"gain_percent", .1, 100., .1, 50., "Gain percentage (%), min=0.1, max=100.0."};
 const DoubleParam SOUND_SPEED = {"sound_speed", 1400., 1600., .1, 1500.,
     "Sound speed (in m/s, set to 0 for it to be calculated using salinity), min=1400.0, max=1600.0."};

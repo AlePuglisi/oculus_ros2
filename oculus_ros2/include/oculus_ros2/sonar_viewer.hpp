@@ -58,7 +58,7 @@ class SonarViewer {
 public:
   explicit SonarViewer(rclcpp::Node* node);
   ~SonarViewer();
-  void publishFan(const oculus::PingMessage::ConstPtr& ping, const std::string& frame_id = "sonar") const;
+  void publishFan(const oculus::PingMessage::ConstPtr& ping, const std::string& frame_id = "oculus_sonar") const;
   void publishFan(const oculus_interfaces::msg::Ping& ros_ping_msg) const;
   void publishFan(const int& width,
       const int& height,

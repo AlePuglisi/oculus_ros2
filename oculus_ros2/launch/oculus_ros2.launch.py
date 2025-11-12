@@ -65,6 +65,14 @@ def generate_launch_description():
         namespace="sonar",
         output="screen",
     )
+
+    scientific_viewer_node = Node(
+        package="oculus_ros2",
+        executable="scientific_viewer_node",
+        name="scientific_viewer",
+        namespace="sonar",
+        output="screen",
+    )
     
     sonar_frame_static_tf_node = Node(
             package="tf2_ros",
@@ -73,8 +81,18 @@ def generate_launch_description():
             arguments=["0", "0", "0", "0", "0", "0", "map", "oculus_sonar"]
     )
 
+    rviz_node =  Node(
+            package='rviz2',
+            namespace='',
+            executable='rviz2',
+            name='rviz2',
+            arguments=['-d' + os.path.join(get_package_share_directory('oculus_ros2'), 'cfg', 'oculus.rviz')]
+        )
+
     ld.add_action(sonar_frame_static_tf_node)
-    ld.add_action(oculus_viewer_node)
+    #ld.add_action(oculus_viewer_node)
+    ld.add_action(scientific_viewer_node)
     ld.add_action(oculus_sonar_node)
+    ld.add_action(rviz_node)
 
     return ld
