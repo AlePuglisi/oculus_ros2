@@ -33,6 +33,7 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch_ros.actions import Node
+from launch.substitutions import Command
 
 
 def generate_launch_description():
@@ -88,8 +89,18 @@ def generate_launch_description():
             name='rviz2',
             arguments=['-d' + os.path.join(get_package_share_directory('oculus_ros2'), 'cfg', 'oculus.rviz')]
         )
+    
+    description_path = get_package_share_directory('oculus_ros2')
+    xacro_path = os.path.join(description_path, "urdf", "sonar.urdf.xacro")
+    robot_description_command = Command(['xacro ', xacro_path])
+    robot_state_publisher_node = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        parameters=[{'robot_description': robot_description_command}]
+    )   
 
     ld.add_action(sonar_frame_static_tf_node)
+    ld.add_action(robot_state_publisher_node)
     #ld.add_action(oculus_viewer_node)
     ld.add_action(scientific_viewer_node)
     ld.add_action(oculus_sonar_node)

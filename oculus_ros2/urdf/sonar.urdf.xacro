@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="oculus_sonar" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <material name="gray">
+        <color rgba="0.3 0.3 0.3 1"/>
+    </material>
+
+    <link name="oculus_sonar">
+      <visual>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 1.57" />
+        <geometry>
+          <mesh
+            filename="package://oculus_ros2/mesh/oculus_sonar.stl" scale="1.0 1.0 1.0"/>
+        </geometry>
+        <material name="gray"/>
+      </visual>
+    </link>
+    
+</robot>

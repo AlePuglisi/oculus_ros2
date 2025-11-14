@@ -108,7 +108,7 @@ set_target_properties(oculus_sonar_node PROPERTIES
 )
 
 install(PROGRAMS scripts/display_oculus_file.py scripts/oculus_to_rosbag.py DESTINATION bin)
-install(DIRECTORY launch cfg DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY launch cfg mesh urdf DESTINATION share/${PROJECT_NAME})
 install(PROGRAMS scripts/oculus_subscriber_to_image.py DESTINATION lib/${PROJECT_NAME})
 install(TARGETS oculus_sonar_node oculus_simple_sonar_node oculus_viewer_node scientific_viewer_node DESTINATION lib/${PROJECT_NAME})
 
